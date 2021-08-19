@@ -4,11 +4,7 @@ import atmos
 
 class Body(ABC):
 
-    def __init__(self, Name=None, c_W = 0.0, body_mass = 0.0, drag_area = 0.0, f_R=0.0):
-
-        if None == Name:
-            raise NameError
-        self.Name = Name
+    def __init__(self, c_W = 0.0, body_mass = 0.0, drag_area = 0.0, f_R=0.0):
         if 0.0 == c_W or 0.0 == body_mass or 0.0 == drag_area or 0.0 == f_R:
             print(f'model needs `c_W`, `body_mass`, drag_area` and `f_R` parameters')
             raise ValueError
@@ -26,15 +22,20 @@ class Body(ABC):
         F_longitudinal = F_friction + F_acceleration + F_wind
         return F_longitudinal
 
-    def get_name(self):
-        return self.Name
-
     @abstractmethod
     def get_energy_flow(self, speed_meters_per_second, acceleration_meters_per_square_second = 0.0):
-        self.speed = speed_meters_per_second
         F = self.__get_tractive_effort(speed_meters_per_second, acceleration_meters_per_square_second)
         return {
-            "LongitudinalForceInNewton": F,
-            "SpeedInMetersPerSecond": self.speed,
-            "PowerInWatts": F * self.speed
+            "potential": {
+                "value": F,
+                "unit": "N"
+            },
+            "flow": {
+                "value": speed_meters_per_second,
+                "unit": "m/s"
+            },
+            "power": {
+                "value": F * self.speed,
+                "unit": "Watt"
+            }
         }
